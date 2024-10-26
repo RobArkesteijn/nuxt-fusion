@@ -7,3 +7,17 @@ runs:
       uses: pnpm/action-setup@v4
       with:
         version: 9.12.2
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+    - name: Cache built folders
+      id: cache-nuxt
+      uses: actions/cache@v4
+      with:
+        path: |
+          .nuxt
+          .output
+        key: nuxt-${{ github.sha }}
