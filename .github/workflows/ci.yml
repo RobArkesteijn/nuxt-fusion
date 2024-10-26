@@ -1,0 +1,40 @@
+name: CI
+on: [pull_request]
+jobs:
+  install:
+    name: Install project dependencies
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-slim
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/setup-base/
+      - name: Install
+        run: pnpm install --frozen-lockfile
+  code-analysis:
+    needs: install
+    name: Lint & Typecheck project code
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-slim
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/setup-base/
+      - name: Lint & Typecheck
+        run: pnpm lint && pnpm typecheck
+  build:
+    needs: install
+    name: Build and compile project
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-slim
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/setup-base/
+      - name: Build
+        run: pnpm build
+        env:
+          NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_LICENSE }}
